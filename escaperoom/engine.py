@@ -1,13 +1,15 @@
 
 from escaperoom.rooms.base import GameState,Room
+from escaperoom.rooms.vault import VaultRoom
 
 
 def run(start: str, data: str, transcript: str) -> None:
     start = start or "intro"
+    data = data or "data"
     transcript = transcript or "run.txt"
 
     state = GameState(current_room=start)
-    rooms = make_rooms()
+    rooms = make_rooms(data)
     if state.current_room not in rooms:
         raise SystemExit(f"Unknown room: {state.current_room}")
 
@@ -26,7 +28,10 @@ def run(start: str, data: str, transcript: str) -> None:
                 break
 
             elif cmd == "help":
-                echo(log, "Commands: look, move <room>, inventory, quit")
+                echo(log, "Commands: look, move <room>, inspect <item>, inventory, quit")
+            elif cmd == "inspect":
+                for text in rooms[state.current_room].inspect(state, arg):
+                    echo(log, text)
             elif cmd == "look":
                 echo(log, rooms[state.current_room].description)
             elif cmd == "move":
@@ -43,11 +48,12 @@ def run(start: str, data: str, transcript: str) -> None:
             else:
                 echo(log, "This command does not exist")
 
-def make_rooms() -> dict[str, Room]:
+def make_rooms(data: str) -> dict[str, Room]:
     return {
         "intro": Room("intro",
             "You are in the Intro Lobby.\n"
-            "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malvare, final.")
+            "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malvare, final."),
+        "vault": VaultRoom(data),
         }
 
 def echo(log, text: str = "") -> None:
