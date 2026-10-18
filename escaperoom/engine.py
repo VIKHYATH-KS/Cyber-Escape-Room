@@ -55,8 +55,7 @@ def make_rooms(data: str) -> dict[str, Room]:
             "You are in the Intro Lobby.\n"
             "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malware, final."),
         "soc": SOCRoom(data),
-        "vault": VaultRoom(data),
-    }
+        "vault": VaultRoom(data),}
 
 def echo(log, text: str = "") -> None:
     print(text)
