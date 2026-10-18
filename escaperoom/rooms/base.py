@@ -13,3 +13,6 @@ class Room:
 
     def solve(self, state: GameState) -> None:
         raise NotImplementedError
+
+    def inspect(self, state: GameState, item: str) -> list[str]:
+        return ["Nothing to inspect here."]
