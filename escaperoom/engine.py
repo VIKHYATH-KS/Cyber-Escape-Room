@@ -1,6 +1,7 @@
 
 from escaperoom.rooms.base import GameState,Room
 from escaperoom.rooms.vault import VaultRoom
+from escaperoom.rooms.soc import SOCRoom
 
 
 def run(start: str, data: str, transcript: str) -> None:
@@ -52,9 +53,10 @@ def make_rooms(data: str) -> dict[str, Room]:
     return {
         "intro": Room("intro",
             "You are in the Intro Lobby.\n"
-            "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malvare, final."),
+            "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malware, final."),
+        "soc": SOCRoom(data),
         "vault": VaultRoom(data),
-        }
+    }
 
 def echo(log, text: str = "") -> None:
     print(text)
