@@ -16,7 +16,7 @@ _HELP = (
 
 _DEFAULT_ORDER = ["KEYPAD", "DNS", "SAFE", "PID"]
 
-# Used when a room does not carry its own script. A room's hints tuple wins.
+#hints for soc and dns, pls move it to your own room files like it is done for vault. Or we can all centralize it here. 
 _RADIO: dict[str, tuple[str, str, str]] = {
     "soc": (
         "The item on this desk is auth.log.",
@@ -31,12 +31,14 @@ _RADIO: dict[str, tuple[str, str, str]] = {
     ),
 }
 
+#this is called when no specific hint is specified for that room
 _GENERIC_RADIO = (
     "Look around. The room description names what matters.",
     "Inspect the item in this room.",
     "Derive the token from the evidence and keep it.",
 )
 
+#hints for the lobby 
 _INTRO_RADIO = (
     "The doors are labeled. move <room> to start a desk.",
     "Each open room has one evidence file. inspect it by name.",
