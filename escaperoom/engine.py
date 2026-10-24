@@ -3,6 +3,7 @@ from escaperoom.rooms.base import GameState,Room
 from escaperoom.rooms.vault import VaultRoom
 from escaperoom.rooms.soc import SOCRoom
 from escaperoom.rooms.dns import DNSRoom
+from escaperoom.rooms.malware import MalwareRoom
 
 
 def run(start: str, data: str, transcript: str) -> None:
@@ -58,6 +59,7 @@ def make_rooms(data: str) -> dict[str, Room]:
         "soc": SOCRoom(data),
         "dns": DNSRoom(data),
         "vault": VaultRoom(data),
+        "malware": MalwareRoom(data),
         }
 
 def echo(log, text: str = "") -> None:
