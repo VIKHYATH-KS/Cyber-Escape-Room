@@ -6,6 +6,7 @@ from escaperoom.rooms.base import GameState, Room
 from escaperoom.rooms.vault import VaultRoom
 from escaperoom.rooms.soc import SOCRoom
 from escaperoom.rooms.dns import DNSRoom
+from escaperoom.rooms.malware import MalwareRoom
 
 
 _HELP = (
@@ -129,7 +130,8 @@ def make_rooms(data: str) -> dict[str, Room]:
         "soc": SOCRoom(data),
         "dns": DNSRoom(data),
         "vault": VaultRoom(data),
-    }
+        "malware": MalwareRoom(data),
+        }
 
 
 def read_gate_meta(data: str) -> tuple[str, list[str]]:
