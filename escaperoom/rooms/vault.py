@@ -52,8 +52,20 @@ class VaultRoom(Room):
             "You enter the Vault Corridor.\n"
             "A noisy dump scrolls past. Somewhere a SAFE{a-b-c} hides.\n"
             "Items here: vault_dump.txt",
+            hints=(
+                "The item in this corridor is vault_dump.txt.",
+                "A candidate looks like SAFE{a-b-c}. Spacing and characters vary.",
+                "Correct candidate is where a + b = c.",
+            ),
         )
         self.data_dir = data_dir
+
+    def use(self, state: GameState, item: str) -> list[str]:
+        if item == _ITEM:
+            if "SAFE" in state.tokens:
+                return ["The vault is already open. The code is in your inventory."]
+            return [f"Inspect {_ITEM}. Use only for the final gate."]
+        return super().use(state, item)
 
     def inspect(self, state: GameState, item: str) -> list[str]:
         if item != _ITEM:
