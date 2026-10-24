@@ -49,3 +49,5 @@ coverage.xml
 docs/_build/
    
 Cyber Escape-Room Shared-Task Description.ipynb
+
+.vscode
