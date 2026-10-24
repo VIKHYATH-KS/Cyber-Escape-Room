@@ -148,7 +148,7 @@ class VaultUseTests(unittest.TestCase):
         )
         self.assertEqual(
             room.use(state, "SAFE"),
-            ["You are holding SAFE. It will matter at the final gate."],
+            ["You have SAFE."],
         )
 
 
