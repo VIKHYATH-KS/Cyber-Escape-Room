@@ -5,7 +5,12 @@ from .base import GameState, Room
 
 class SOCRoom(Room):
     def __init__(self, data_path):
-        super().__init__("SOC Triage Desk", "A cluttered screen shows failed SSH login attempts.")
+        super().__init__(
+            "soc",
+            "You enter the SOC Triage Desk.\n"
+            "A cluttered screen shows failed SSH login attempts.\n"
+            "Items here: auth.log",
+        )
         self.data_path = data_path
     
     def inspect(self, state: GameState, item: str) -> list[str]:
