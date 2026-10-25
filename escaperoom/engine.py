@@ -7,6 +7,7 @@ from escaperoom.rooms.vault import VaultRoom
 from escaperoom.rooms.soc import SOCRoom
 from escaperoom.rooms.dns import DNSRoom
 from escaperoom.rooms.malware import MalwareRoom
+from escaperoom.rooms.final import FinalRoom
 
 
 _HELP = (
@@ -133,6 +134,7 @@ def make_rooms(data: str) -> dict[str, Room]:
         "dns": DNSRoom(data),
         "vault": VaultRoom(data),
         "malware": MalwareRoom(data),
+        "final": FinalRoom(data),
         }
 
 
