@@ -2,6 +2,7 @@ import json
 import os
 from typing import TextIO
 
+from escaperoom.constants import DEFAULT_ORDER, GENERIC_RADIO, HELP, INTRO_RADIO, RADIO
 from escaperoom.rooms.base import GameState, Room
 from escaperoom.rooms.vault import VaultRoom
 from escaperoom.rooms.soc import SOCRoom
@@ -9,47 +10,6 @@ from escaperoom.rooms.dns import DNSRoom
 from escaperoom.rooms.malware import MalwareRoom
 from escaperoom.rooms.final import FinalRoom
 
-
-_HELP = (
-    "Commands: look, move <room>, inspect <item>, use <item>, "
-    "inventory, hint, save <file>, load <file>, quit"
-)
-
-_DEFAULT_ORDER = ["KEYPAD", "DNS", "SAFE", "PID"]
-
-#hints for soc and dns, pls move it to your own room files like it is done for vault. Or we can all centralize it here. 
-_RADIO: dict[str, tuple[str, str, str]] = {
-    "soc": (
-        "The item on this desk is auth.log.",
-        "Keep a line only when it is a full SSH password record. Count every line you skip.",
-        "The keypad is the busiest address's last octet, then the failure count of its /24.",
-    ),
-    "dns": (
-        "The item in this closet is dns.cfg.",
-        "token_tag names the real hint. Lines that start with # are not records.",
-        "Reverse the declared encoding. For rot13+b64 that is ROT13, then Base64, then UTF-8. "
-        "The token is the last word, without the final period.",
-    ),
-    "final": (
-        "The console uses final_gate.txt.",
-        "Collect every token shown on the incident board first.",
-        "The file defines the group, token order, and signing key.",
-    ),
-}
-
-#this is called when no specific hint is specified for that room
-_GENERIC_RADIO = (
-    "Look around. The room description names what matters.",
-    "Inspect the item in this room.",
-    "Derive the token from the evidence and keep it.",
-)
-
-#hints for the lobby 
-_INTRO_RADIO = (
-    "The doors are labeled. move <room> to start a desk.",
-    "Each open room has one evidence file. inspect it by name.",
-    "Collected tokens appear on the incident board. The final gate wants all four.",
-)
 
 class SaveError(Exception):
     pass
@@ -80,7 +40,7 @@ def run(start: str | None, data: str | None, transcript: str | None) -> None:
                 echo(log, f"[Game] Transcript written to {transcript}")
                 break
             elif cmd == "help":
-                echo(log, _HELP)
+                echo(log, HELP)
             elif cmd == "inspect":
                 for text in rooms[state.current_room].inspect(state, arg):
                     echo(log, text)
@@ -133,7 +93,7 @@ def make_rooms(data: str) -> dict[str, Room]:
             "intro",
             "You are in the Intro Lobby.\n"
             "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malware, final.",
-            hints=_INTRO_RADIO,
+            hints=INTRO_RADIO,
         ),
         "soc": SOCRoom(data),
         "dns": DNSRoom(data),
@@ -145,7 +105,7 @@ def make_rooms(data: str) -> dict[str, Room]:
 
 def read_gate_meta(data: str) -> tuple[str, list[str]]:
     group_id = ""
-    order = list(_DEFAULT_ORDER)
+    order = list(DEFAULT_ORDER)
     path = os.path.join(data, "final_gate.txt")
     try:
         with open(path, encoding="utf-8") as handle:
@@ -182,7 +142,7 @@ def incident_lines(state: GameState, order: list[str]) -> list[str]:
 def radio_script(room_key: str, room: Room) -> tuple[str, str, str]:
     if room.hints is not None:
         return room.hints
-    return _RADIO.get(room_key, _GENERIC_RADIO)
+    return RADIO.get(room_key, GENERIC_RADIO)
 
 
 def next_hint(state: GameState, room_key: str, room: Room) -> list[str]:
