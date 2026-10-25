@@ -54,11 +54,6 @@ class FinalRoom(Room):
         super().__init__(
             "final",
             "You stand before the Final Gate. The console asks for proof.",
-            hints=(
-                "The console uses final_gate.txt.",
-                "Collect every token shown on the incident board first.",
-                "The file defines the group, token order, and signing key.",
-            ),
         )
         self.data_dir = data_dir
 

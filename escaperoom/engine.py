@@ -30,6 +30,11 @@ _RADIO: dict[str, tuple[str, str, str]] = {
         "Reverse the declared encoding. For rot13+b64 that is ROT13, then Base64, then UTF-8. "
         "The token is the last word, without the final period.",
     ),
+    "final": (
+        "The console uses final_gate.txt.",
+        "Collect every token shown on the incident board first.",
+        "The file defines the group, token order, and signing key.",
+    ),
 }
 
 #this is called when no specific hint is specified for that room
