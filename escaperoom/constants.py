@@ -20,9 +20,13 @@ RADIO: dict[str, tuple[str, str, str]] = {
     ),
     "dns": (
         "The item in this closet is dns.cfg.",
-        "token_tag names the real hint. Lines that start with # are not records.",
-        "Reverse the declared encoding. For rot13+b64 that is ROT13, then Base64, then UTF-8. "
-        "The token is the last word, without the final period.",
+        "token_tag names the real hint; ignore comments and the other hint records.",
+        "Decode the selected value using its declared encoding, then take its last word as the token.",
+    ),
+    "malware": (
+        "The process evidence is proc_tree.jsonl.",
+        "Skip malformed records, then connect each PID to its PPID starting from the process with PPID 0.",
+        "Follow the tree to a curl POST uploading /tmp/x.tgz or an scp sending it to a remote host. That process PID is the token.",
     ),
     "final": (
         "The console uses final_gate.txt.",
@@ -31,6 +35,7 @@ RADIO: dict[str, tuple[str, str, str]] = {
     ),
 }
 
+# fallback for any room without custom hints (if all rooms have custom hints, this is unused)
 GENERIC_RADIO = (
     "Look around. The room description names what matters.",
     "Inspect the item in this room.",
