@@ -52,11 +52,6 @@ class VaultRoom(Room):
             "You enter the Vault Corridor.\n"
             "A noisy dump scrolls past. Somewhere a SAFE{a-b-c} hides.\n"
             "Items here: vault_dump.txt",
-            hints=(
-                "The item in this corridor is vault_dump.txt.",
-                "A candidate looks like SAFE{a-b-c}. Spacing and characters vary.",
-                "Correct candidate is where a + b = c.",
-            ),
         )
         self.data_dir = data_dir
 

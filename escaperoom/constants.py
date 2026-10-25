@@ -23,6 +23,11 @@ RADIO: dict[str, tuple[str, str, str]] = {
         "token_tag names the real hint; ignore comments and the other hint records.",
         "Decode the selected value using its declared encoding, then take its last word as the token.",
     ),
+    "vault": (
+        "The item in this corridor is vault_dump.txt.",
+        "A candidate looks like SAFE{a-b-c}. Spacing and characters vary.",
+        "Correct candidate is where a + b = c.",
+    ),
     "malware": (
         "The process evidence is proc_tree.jsonl.",
         "Skip malformed records, then connect each PID to its PPID starting from the process with PPID 0.",
@@ -41,4 +46,3 @@ GENERIC_RADIO = (
     "Inspect the item in this room.",
     "Derive the token from the evidence and keep it.",
 )
-
