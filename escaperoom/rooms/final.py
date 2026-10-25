@@ -77,7 +77,7 @@ class FinalRoom(Room):
             return result
 
         message = f"{group_id}|{'-'.join(state.tokens[name] for name in order)}"
-        code = hmac.new(key, message.encode("utf-8"), hashlib.sha256).hexdigest()
+        code = clearance_code(group_id, order, state.tokens, key)
         result.extend((f"MSG={message}", f"EXPECTED_HMAC={code}"))
         return result
 
