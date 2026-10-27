@@ -200,3 +200,9 @@ The tests cover the room logic, parsing and validation of evidence, malformed re
 ## License
 
 No license is currently specified in this repository. If the project will be distributed or reused outside the course, add an appropriate license file.
+
+## AI Usage Disclosure
+
+Generative AI (ChatGPT) was used to assist with drafting and organizing this README. AI assistance included structuring and wording the project overview, setup instructions, command descriptions, project structure, testing instructions, and implementation notes, based on the existing repository.
+
+The project authors remain responsible for reviewing the documentation and ensuring its accuracy.
