@@ -11,6 +11,7 @@ class DNSConfigError(ValueError):
 
 
 def parse_config(lines: list[str]) -> dict[str, str]:
+    """Parse non-comment lines into a key/value mapping."""
     values: dict[str, str] = {}
 
     for line_number, line in enumerate(lines, start=1):
@@ -34,6 +35,7 @@ def parse_config(lines: list[str]) -> dict[str, str]:
 
 
 def decode_value(value: str) -> tuple[str, str]:
+    """Decode a value using the encoding named before the colon."""
     if ":" not in value:
         raise DNSConfigError("Encoded value is missing its encoding prefix.")
 
@@ -58,6 +60,7 @@ def decode_value(value: str) -> tuple[str, str]:
 
 
 def decode_dns(lines: list[str]) -> tuple[str, str, str, str]:
+    """Select the configured hint and return its token with evidence."""
     values = parse_config(lines)
 
     if "token_tag" not in values:
@@ -85,6 +88,8 @@ def decode_dns(lines: list[str]) -> tuple[str, str, str, str]:
 
 
 class DNSRoom(Room):
+    """Room that decodes the DNS clue file."""
+    
     def __init__(self, data_dir: str):
         super().__init__(
             "dns",
@@ -95,6 +100,7 @@ class DNSRoom(Room):
         self.data_dir = data_dir
 
     def inspect(self, state: GameState, item: str) -> list[str]: # overrides Room.inspect
+        """Decode the clue and store its token in the game state."""
         if item != DNS_ITEM:
             return super().inspect(state, item) # use the base class's inspect method
 
