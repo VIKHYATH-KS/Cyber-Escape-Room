@@ -2,9 +2,8 @@ import hashlib
 import hmac
 import os
 
+from ..constants import FINAL_GATE_ITEM
 from .base import GameState, Room
-
-_ITEM = "final_gate.txt"
 
 
 class FinalGateError(ValueError):
@@ -61,7 +60,7 @@ class FinalRoom(Room):
         if item.lower() != "gate":
             return super().use(state, item)
 
-        path = os.path.join(self.data_dir, _ITEM)
+        path = os.path.join(self.data_dir, FINAL_GATE_ITEM)
         try:
             group_id, order, key = read_final_gate(path)
         except OSError:
@@ -81,7 +80,7 @@ class FinalRoom(Room):
         result.extend((f"MSG={message}", f"EXPECTED_HMAC={code}"))
         return result
 
-    def inspect(self, state: GameState, item: str) -> list[str]:
-        if item != _ITEM:
-            return [f"You don't see '{item}' here."]
+    def inspect(self, item: str) -> list[str]:
+        if item != FINAL_GATE_ITEM:
+            return super().inspect(item)
         return ["The console is ready. Use gate to assemble the proof."]

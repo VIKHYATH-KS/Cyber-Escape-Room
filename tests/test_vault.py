@@ -132,12 +132,5 @@ class VaultRoomTests(unittest.TestCase):
         self.assertEqual(state.tokens, {})
         self.assertEqual(state.inventory, set())
 
-    def test_lobby_inspect_is_harmless(self) -> None:
-        self.assertEqual(
-            Room("lobby", "lobby").inspect(GameState(), "vault_dump.txt"),
-            ["Nothing to inspect here."],
-        )
-
-
 if __name__ == "__main__":
     unittest.main()

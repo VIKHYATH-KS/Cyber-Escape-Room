@@ -3,13 +3,12 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from escaperoom.constants import VAULT_ITEM
 from escaperoom.rooms.base import GameState, Room
 
 _SAFE_RE = re.compile(
     r"\bSAFE\s*\{\s*(\d+)\s*-\s*(\d+)\s*-\s*(\d+)\s*\}"
 )
-
-_ITEM = "vault_dump.txt"
 
 
 @dataclass(frozen=True)
@@ -51,24 +50,25 @@ class VaultRoom(Room):
             "vault",
             "You enter the Vault Corridor.\n"
             "A noisy dump scrolls past. Somewhere a SAFE{a-b-c} hides.\n"
-            "Items here: vault_dump.txt",
+            f"Items here: {VAULT_ITEM}",
         )
         self.data_dir = data_dir
 
     def use(self, state: GameState, item: str) -> list[str]:
-        if item == _ITEM:
+        if item == VAULT_ITEM:
             if "SAFE" in state.tokens:
                 return ["The vault is already open. The code is in your inventory."]
-            return [f"Inspect {_ITEM}. Use only for the final gate."]
+            return [f"Inspect {VAULT_ITEM}. Use only for the final gate."]
         return super().use(state, item)
 
     def inspect(self, state: GameState, item: str) -> list[str]:
-        if item != _ITEM:
-            return [f"You don't see '{item}' here."]
+        if item != VAULT_ITEM:
+            return super().inspect(item)
+        
         if "SAFE" in state.tokens:
             return ["The vault is already open."]
 
-        path = os.path.join(self.data_dir, _ITEM)
+        path = os.path.join(self.data_dir, VAULT_ITEM)
         try:
             with open(path, encoding="utf-8") as handle:
                 lines = handle.readlines()
