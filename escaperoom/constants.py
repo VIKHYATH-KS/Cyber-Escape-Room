@@ -8,7 +8,7 @@ HELP = (
 DEFAULT_ORDER = ["KEYPAD", "DNS", "SAFE", "PID"]
 
 RADIO: dict[str, tuple[str, str, str]] = {
-    "intro": (
+    "lobby": (
         "The doors are labeled. move <room> to start a desk.",
         "Each open room has one evidence file. inspect it by name.",
         "Collected tokens appear on the incident board. The final gate wants all four.",

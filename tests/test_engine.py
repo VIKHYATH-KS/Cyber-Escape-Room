@@ -82,7 +82,7 @@ class BoardAndRadioTests(unittest.TestCase):
 
 class SaveLoadTests(unittest.TestCase):
     def test_round_trip(self) -> None:
-        rooms = {"intro": Room("intro", "lobby"), "vault": VaultRoom(PACK)}
+        rooms = {"lobby": Room("lobby", "lobby"), "vault": VaultRoom(PACK)}
         state = GameState(
             current_room="vault",
             inventory={"SAFE", "KEYPAD"},
@@ -102,7 +102,7 @@ class SaveLoadTests(unittest.TestCase):
         self.assertEqual(loaded.hint_counts, {"vault": 2})
 
     def test_malformed_json_does_not_build_a_state(self) -> None:
-        rooms = {"intro": Room("intro", "lobby")}
+        rooms = {"lobby": Room("lobby", "lobby")}
         with tempfile.TemporaryDirectory() as folder:
             path = os.path.join(folder, "broken.json")
             with open(path, "w", encoding="utf-8") as handle:
@@ -111,7 +111,7 @@ class SaveLoadTests(unittest.TestCase):
                 load_progress(path, rooms)
 
     def test_unknown_room_is_rejected(self) -> None:
-        rooms = {"intro": Room("intro", "lobby")}
+        rooms = {"lobby": Room("lobby", "lobby")}
         with tempfile.TemporaryDirectory() as folder:
             path = os.path.join(folder, "save1.json")
             with open(path, "w", encoding="utf-8") as handle:
@@ -121,7 +121,7 @@ class SaveLoadTests(unittest.TestCase):
         self.assertIn("malware", str(caught.exception))
 
     def test_missing_file_raises_oserror(self) -> None:
-        rooms = {"intro": Room("intro", "lobby")}
+        rooms = {"lobby": Room("lobby", "lobby")}
         with self.assertRaises(OSError):
             load_progress(os.path.join(tempfile.gettempdir(), "no-such-save.json"), rooms)
 
@@ -129,7 +129,7 @@ class SaveLoadTests(unittest.TestCase):
         with self.assertRaises(SaveError):
             save_progress("", GameState())
         with self.assertRaises(SaveError):
-            load_progress("", {"intro": Room("intro", "lobby")})
+            load_progress("", {"lobby": Room("lobby", "lobby")})
 
 
 class VaultUseTests(unittest.TestCase):
