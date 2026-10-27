@@ -52,6 +52,8 @@ def decode_value(value: str) -> tuple[str, str]:
             raise DNSConfigError(f"Unsupported encoding: {encoding}")
 
         return encoding, decoded_bytes.decode("utf-8")
+    except DNSConfigError:
+        raise
     except (ValueError, UnicodeDecodeError) as err:
         raise DNSConfigError("Encoded value is not valid Base64 or UTF-8.") from err
 
