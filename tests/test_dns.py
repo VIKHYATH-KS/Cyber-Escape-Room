@@ -24,6 +24,7 @@ def encode_rot13_b64(text: str) -> str:
 
 
 class ParseConfigTests(unittest.TestCase):
+    # Check that DNS config records are parsed cleanly and malformed lines fail.
     def test_parses_records_and_ignores_comments_and_blank_lines(self) -> None:
         values = parse_config([
             "# DNS settings\n",
@@ -43,11 +44,13 @@ class ParseConfigTests(unittest.TestCase):
 
 
 class DecodeValueTests(unittest.TestCase):
+    # Exercise each supported encoding and errors for invalid encoded values.
     def test_decodes_base64_utf8_text(self) -> None:
         payload = base64.b64encode("hello café".encode("utf-8")).decode("ascii")
         self.assertEqual(decode_value(f"b64:{payload}"), ("b64", "hello café"))
 
     def test_decodes_rot13_then_base64_in_reverse_order(self) -> None:
+        # The payload was Base64-encoded first and then ROT13-obfuscated.
         payload = encode_rot13_b64("The next hint is beacon.")
         self.assertEqual(
             decode_value(f"rot13+b64:{payload}"),
@@ -59,6 +62,7 @@ class DecodeValueTests(unittest.TestCase):
             decode_value("YWJj")
 
     def test_unsupported_encoding_is_rejected(self) -> None:
+        # Unsupported prefixes should retain their specific error message.
         with self.assertRaisesRegex(DNSConfigError, "Unsupported encoding: hex"):
             decode_value("hex:616263")
 
@@ -68,7 +72,9 @@ class DecodeValueTests(unittest.TestCase):
 
 
 class DecodeDNSTests(unittest.TestCase):
+    # Check how token_tag selects a hint and how invalid selection data is handled.
     def test_uses_token_tag_to_select_and_decode_the_hint(self) -> None:
+        # token_tag decodes to 2, so hint2 supplies the sentence and final token.
         selected_hint = base64.b64encode(b"2").decode("ascii")
         hint_payload = encode_rot13_b64("Follow the trail to beacon.")
         result = decode_dns([
@@ -102,7 +108,9 @@ class DecodeDNSTests(unittest.TestCase):
 
 
 class DNSRoomTests(unittest.TestCase):
+    # Test room behavior, including state changes and user-facing errors.
     def test_inspecting_pack_sets_dns_token_and_returns_evidence(self) -> None:
+        # The project's real dns.cfg should decode to beacon and add DNS to inventory.
         room = DNSRoom(PACK)
         state = GameState()
         lines = room.inspect(state, "dns.cfg")
@@ -125,6 +133,7 @@ class DNSRoomTests(unittest.TestCase):
         self.assertEqual(lines, [f"Cannot read {os.path.join(folder, 'dns.cfg')}."])
 
     def test_invalid_config_is_reported_without_setting_token(self) -> None:
+        # Bad input should report a decoding error and leave game state untouched.
         with tempfile.TemporaryDirectory() as folder:
             with open(os.path.join(folder, "dns.cfg"), "w", encoding="utf-8") as handle:
                 handle.write("token_tag=b64:%%%\n")
