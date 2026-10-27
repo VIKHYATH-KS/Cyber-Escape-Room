@@ -90,19 +90,21 @@ def run(start: str | None, data: str | None, transcript: str | None) -> None:
 
 
 def make_rooms(data: str) -> dict[str, Room]:
-    return {
-        "lobby": Room(
-            "lobby",
-            "You are in the Intro Lobby.\n"
+    """Create room objects and map each room name to its object."""
+    rooms = (
+        Room(
+            "lobby", 
+            "TEST: You are in the Intro Lobby.\n"
             "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malware, final.",
-            hints=RADIO["lobby"],
+            hints=RADIO["lobby"]
         ),
-        "soc": SOCRoom(data),
-        "dns": DNSRoom(data),
-        "vault": VaultRoom(data),
-        "malware": MalwareRoom(data),
-        "final": FinalRoom(data),
-        }
+        SOCRoom(data),
+        DNSRoom(data),
+        VaultRoom(data),
+        MalwareRoom(data),
+        FinalRoom(data),
+    )
+    return {room.name: room for room in rooms}
 
 
 def read_gate_meta(data: str) -> tuple[str, list[str]]:
