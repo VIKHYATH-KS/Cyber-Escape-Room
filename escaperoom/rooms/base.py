@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class GameState:
-    current_room: str = "intro"
+    current_room: str = "lobby"
     inventory: set[str] = field(default_factory=set)
     tokens: dict[str, str] = field(default_factory=dict)
     hint_counts: dict[str, int] = field(default_factory=dict)

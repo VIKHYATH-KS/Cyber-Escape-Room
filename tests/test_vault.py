@@ -134,7 +134,7 @@ class VaultRoomTests(unittest.TestCase):
 
     def test_lobby_inspect_is_harmless(self) -> None:
         self.assertEqual(
-            Room("intro", "lobby").inspect(GameState(), "vault_dump.txt"),
+            Room("lobby", "lobby").inspect(GameState(), "vault_dump.txt"),
             ["Nothing to inspect here."],
         )
 

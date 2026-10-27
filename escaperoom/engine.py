@@ -17,6 +17,8 @@ class SaveError(Exception):
 
 def run(start: str | None, data: str | None, transcript: str | None) -> None:
     start = start or "intro"
+    if start == "intro":
+        start = "lobby"
     data = data or "data"
     transcript = transcript or "run.txt"
 
@@ -89,11 +91,11 @@ def run(start: str | None, data: str | None, transcript: str | None) -> None:
 
 def make_rooms(data: str) -> dict[str, Room]:
     return {
-        "intro": Room(
-            "intro",
+        "lobby": Room(
+            "lobby",
             "You are in the Intro Lobby.\n"
             "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malware, final.",
-            hints=RADIO["intro"],
+            hints=RADIO["lobby"],
         ),
         "soc": SOCRoom(data),
         "dns": DNSRoom(data),
@@ -183,7 +185,7 @@ def state_from_payload(payload: object, rooms: dict[str, Room]) -> GameState:
     if not isinstance(payload, dict):
         raise SaveError("Save file must be a JSON object.")
 
-    room = payload.get("current_room", "intro")
+    room = payload.get("current_room", "lobby")
     if not isinstance(room, str) or room not in rooms:
         label = room if isinstance(room, str) else "unknown"
         raise SaveError(f"Save file is for an unknown room: {label}.")
@@ -215,7 +217,7 @@ def show_room(
     token_order: list[str],
 ) -> None:
     echo(log, rooms[state.current_room].description)
-    if state.current_room != "intro":
+    if state.current_room != "lobby":
         return
     echo(log, "")
     for line in incident_lines(state, token_order):
