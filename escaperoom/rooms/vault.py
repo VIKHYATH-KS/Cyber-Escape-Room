@@ -63,7 +63,7 @@ class VaultRoom(Room):
 
     def inspect(self, state: GameState, item: str) -> list[str]:
         if item != VAULT_ITEM:
-            return super().inspect(item)
+            return super().inspect(state, item)
         
         if "SAFE" in state.tokens:
             return ["The vault is already open."]
