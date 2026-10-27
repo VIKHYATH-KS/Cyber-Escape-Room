@@ -71,18 +71,18 @@ The game starts in the Intro Lobby and writes a transcript to `run.txt` by defau
 The entry point supports optional arguments for the starting room, the data directory, and the transcript path.
 
 ```bash
-python escape.py --start lobby --data data --transcript run.txt
+python escape.py --start intro --data data --transcript run.txt
 ```
 
 Arguments:
 
 | Argument | Description | Default |
 |---|---|---|
-| `--start` | Room to enter when the game starts. | `lobby` |
+| `--start` | Room to enter when the game starts. | `intro` |
 | `--data` | Directory containing the evidence and configuration files. | `data` |
 | `--transcript` | File that records the game interaction and evidence output. | `run.txt` |
 
-Use the room names shown on the lobby doors: `lobby`, `soc`, `dns`, `vault`, `malware`, and `final`.
+Use the room names to move around: `lobby`, `soc`, `dns`, `vault`, `malware`, and `final`.
 
 ## Commands
 
