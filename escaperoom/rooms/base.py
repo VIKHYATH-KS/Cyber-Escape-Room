@@ -18,7 +18,7 @@ class Room:
         self.description = description
         self.hints = hints
 
-    def inspect(self, item: str) -> list[str]:
+    def inspect(self, _state: GameState, item: str) -> list[str]:
         return [f"You don't see '{item}' here."]
 
     def use(self, state: GameState, item: str) -> list[str]:

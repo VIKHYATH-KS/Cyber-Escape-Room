@@ -40,8 +40,8 @@ RADIO: dict[str, tuple[str, str, str]] = {
         "Follow the tree to a curl POST uploading /tmp/x.tgz or an scp sending it to a remote host. That process PID is the token.",
     ),
     "final": (
-        f'The console uses "{FINAL_GATE_ITEM}".',
-        "Collect every token shown on the incident board first.",
+        f'Inspect the item "{FINAL_GATE_ITEM}" to confirm the console is ready.',
+        "Then use `gate` with the `use` command. The console lists any missing tokens so you know which rooms to revisit.",
         "The file defines the group, token order, and signing key.",
     ),
 }
