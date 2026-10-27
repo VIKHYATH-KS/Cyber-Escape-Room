@@ -7,6 +7,7 @@ from escaperoom.rooms.vault import VaultRoom
 from escaperoom.rooms.soc import SOCRoom
 from escaperoom.rooms.dns import DNSRoom
 from escaperoom.rooms.malware import MalwareRoom
+from escaperoom.rooms.final import FinalRoom
 
 
 _HELP = (
@@ -28,6 +29,11 @@ _RADIO: dict[str, tuple[str, str, str]] = {
         "token_tag names the real hint. Lines that start with # are not records.",
         "Reverse the declared encoding. For rot13+b64 that is ROT13, then Base64, then UTF-8. "
         "The token is the last word, without the final period.",
+    ),
+    "final": (
+        "The console uses final_gate.txt.",
+        "Collect every token shown on the incident board first.",
+        "The file defines the group, token order, and signing key.",
     ),
 }
 
@@ -133,6 +139,7 @@ def make_rooms(data: str) -> dict[str, Room]:
         "dns": DNSRoom(data),
         "vault": VaultRoom(data),
         "malware": MalwareRoom(data),
+        "final": FinalRoom(data),
         }
 
 
