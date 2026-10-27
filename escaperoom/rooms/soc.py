@@ -1,6 +1,7 @@
 from datetime import datetime
 from ipaddress import IPv4Address , IPv4Network
 
+from ..constants import SOC_ITEM
 from .base import GameState, Room
 
 class SOCRoom(Room):
@@ -9,18 +10,18 @@ class SOCRoom(Room):
             "soc",
             "You enter the SOC Triage Desk.\n"
             "A cluttered screen shows failed SSH login attempts.\n"
-            "Items here: auth.log",
+            f"Items here: {SOC_ITEM}",
         )
         self.data_path = data_path
     
     def inspect(self, state: GameState, item: str) -> list[str]:
-        if item != "auth.log":
+        if item != SOC_ITEM:
            return super().inspect(item)
 
         try:
-            keypad, max_subnet, max_count, sample, malform_count = ( self.read_auth_log(f"{self.data_path}/auth.log"))
+            keypad, max_subnet, max_count, sample, malform_count = ( self.read_auth_log(f"{self.data_path}/{SOC_ITEM}"))
         except (OSError, ValueError) as error:
-            return [f"[Room SOC] Could not analyze auth.log: {error}"]
+            return [f"[Room SOC] Could not analyze {SOC_ITEM}: {error}"]
 
         state.tokens["KEYPAD"] = keypad
         state.inventory.add("KEYPAD")

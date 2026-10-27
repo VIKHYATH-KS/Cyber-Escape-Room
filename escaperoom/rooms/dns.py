@@ -2,9 +2,8 @@ import base64
 import codecs
 import os
 
+from ..constants import DNS_ITEM
 from .base import GameState, Room
-
-_ITEM = "dns.cfg"
 
 
 class DNSConfigError(ValueError):
@@ -91,18 +90,18 @@ class DNSRoom(Room):
             "dns",
             "You enter the DNS Closet.\n"
             "The walls are covered with scribbled key=value pairs.\n"
-            "Items here: dns.cfg"
+            f"Items here: {DNS_ITEM}"
         )
         self.data_dir = data_dir
 
     def inspect(self, state: GameState, item: str) -> list[str]: # overrides Room.inspect
-        if item != _ITEM:
+        if item != DNS_ITEM:
             return super().inspect(item) # use the base class's inspect method
 
         if "DNS" in state.tokens:
             return ["The DNS hint has already been decoded."]
 
-        path = os.path.join(self.data_dir, _ITEM)
+        path = os.path.join(self.data_dir, DNS_ITEM)
 
         try:
             with open(path, encoding="utf-8") as handle:
