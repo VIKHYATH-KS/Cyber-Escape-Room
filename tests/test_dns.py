@@ -18,13 +18,13 @@ PACK = os.path.join(ROOT, "data")
 
 
 def encode_rot13_b64(text: str) -> str:
-    """Create test input using the file's Base64-then-ROT13 encoding order."""
+    """Encode test text the same way as the ROT13+Base64 records."""
     base64_text = base64.b64encode(text.encode("utf-8")).decode("ascii")
     return codecs.encode(base64_text, "rot_13")
 
 
 class ParseConfigTests(unittest.TestCase):
-    # Check that DNS config records are parsed cleanly and malformed lines fail.
+    # Tests for reading key=value records.
     def test_parses_records_and_ignores_comments_and_blank_lines(self) -> None:
         values = parse_config([
             "# DNS settings\n",
@@ -44,17 +44,17 @@ class ParseConfigTests(unittest.TestCase):
 
 
 class DecodeValueTests(unittest.TestCase):
-    # Exercise each supported encoding and errors for invalid encoded values.
+    # Tests for decoding the supported value formats.
     def test_decodes_base64_utf8_text(self) -> None:
         payload = base64.b64encode("hello café".encode("utf-8")).decode("ascii")
         self.assertEqual(decode_value(f"b64:{payload}"), ("b64", "hello café"))
 
     def test_decodes_rot13_then_base64_in_reverse_order(self) -> None:
-        # The payload was Base64-encoded first and then ROT13-obfuscated.
-        payload = encode_rot13_b64("The next hint is beacon.")
+        # ROT13 is undone before the Base64 text is decoded.
+        payload = encode_rot13_b64("The next hint is answer.")
         self.assertEqual(
             decode_value(f"rot13+b64:{payload}"),
-            ("rot13+b64", "The next hint is beacon."),
+            ("rot13+b64", "The next hint is answer."),
         )
 
     def test_missing_prefix_is_rejected(self) -> None:
@@ -62,7 +62,7 @@ class DecodeValueTests(unittest.TestCase):
             decode_value("YWJj")
 
     def test_unsupported_encoding_is_rejected(self) -> None:
-        # Unsupported prefixes should retain their specific error message.
+        # An unknown prefix should name the unsupported encoding.
         with self.assertRaisesRegex(DNSConfigError, "Unsupported encoding: hex"):
             decode_value("hex:616263")
 
@@ -72,11 +72,11 @@ class DecodeValueTests(unittest.TestCase):
 
 
 class DecodeDNSTests(unittest.TestCase):
-    # Check how token_tag selects a hint and how invalid selection data is handled.
+    # Tests for selecting and reading the hint named by token_tag.
     def test_uses_token_tag_to_select_and_decode_the_hint(self) -> None:
-        # token_tag decodes to 2, so hint2 supplies the sentence and final token.
+        # token_tag decodes to 2, which selects hint2.
         selected_hint = base64.b64encode(b"2").decode("ascii")
-        hint_payload = encode_rot13_b64("Follow the trail to beacon.")
+        hint_payload = encode_rot13_b64("Follow the trail to answer.")
         result = decode_dns([
             f"token_tag=b64:{selected_hint}\n",
             f"hint2=rot13+b64:{hint_payload}\n",
@@ -84,7 +84,7 @@ class DecodeDNSTests(unittest.TestCase):
         ])
         self.assertEqual(
             result,
-            ("hint2", "rot13+b64", "Follow the trail to beacon.", "beacon"),
+            ("hint2", "rot13+b64", "Follow the trail to answer.", "answer"),
         )
 
     def test_missing_token_tag_is_rejected(self) -> None:
@@ -108,18 +108,33 @@ class DecodeDNSTests(unittest.TestCase):
 
 
 class DNSRoomTests(unittest.TestCase):
-    # Test room behavior, including state changes and user-facing errors.
-    def test_inspecting_pack_sets_dns_token_and_returns_evidence(self) -> None:
-        # The project's real dns.cfg should decode to beacon and add DNS to inventory.
-        room = DNSRoom(PACK)
-        state = GameState()
-        lines = room.inspect(state, "dns.cfg")
+    # Tests for inspecting dns.cfg in the DNS room.
+    def test_inspecting_config_sets_token_and_returns_evidence(self) -> None:
+        # Use a small config with a known token.
+        with tempfile.TemporaryDirectory() as folder:
+            payload = base64.b64encode(
+                "The signal points to answer.".encode("utf-8")
+            ).decode("ascii")
+            with open(os.path.join(folder, "dns.cfg"), "w", encoding="utf-8") as handle:
+                handle.write(
+                    "token_tag=b64:MQ==\n"
+                    f"hint1=b64:{payload}\n"
+                )
+            state = GameState()
+            lines = DNSRoom(folder).inspect(state, "dns.cfg")
 
-        self.assertEqual(state.tokens["DNS"], "beacon")
+        self.assertEqual(state.tokens["DNS"], "answer")
         self.assertIn("DNS", state.inventory)
-        self.assertIn("TOKEN[DNS]=beacon", lines)
-        self.assertIn("EVIDENCE[DNS].KEY=hint4", lines)
-        self.assertIn("EVIDENCE[DNS].ENCODING=rot13+b64", lines)
+        self.assertIn("TOKEN[DNS]=answer", lines)
+        self.assertIn("EVIDENCE[DNS].KEY=hint1", lines)
+        self.assertIn("EVIDENCE[DNS].ENCODING=b64", lines)
+
+    def test_project_pack_decodes_to_beacon(self) -> None:
+        # Check the hint currently stored in the project data.
+        with open(os.path.join(PACK, "dns.cfg"), encoding="utf-8") as handle:
+            key, _encoding, _sentence, token = decode_dns(handle.readlines())
+        self.assertEqual(key, "hint4")
+        self.assertEqual(token, "beacon")
 
     def test_wrong_item_does_not_change_state(self) -> None:
         state = GameState()
@@ -133,7 +148,7 @@ class DNSRoomTests(unittest.TestCase):
         self.assertEqual(lines, [f"Cannot read {os.path.join(folder, 'dns.cfg')}."])
 
     def test_invalid_config_is_reported_without_setting_token(self) -> None:
-        # Bad input should report a decoding error and leave game state untouched.
+        # Invalid config should not add a DNS token.
         with tempfile.TemporaryDirectory() as folder:
             with open(os.path.join(folder, "dns.cfg"), "w", encoding="utf-8") as handle:
                 handle.write("token_tag=b64:%%%\n")
@@ -144,7 +159,7 @@ class DNSRoomTests(unittest.TestCase):
         self.assertNotIn("DNS", state.inventory)
 
     def test_decoded_hint_is_not_processed_twice(self) -> None:
-        state = GameState(tokens={"DNS": "beacon"})
+        state = GameState(tokens={"DNS": "answer"})
         lines = DNSRoom(PACK).inspect(state, "dns.cfg")
         self.assertEqual(lines, ["The DNS hint has already been decoded."])
 
