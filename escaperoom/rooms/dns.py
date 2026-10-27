@@ -95,9 +95,9 @@ class DNSRoom(Room):
         )
         self.data_dir = data_dir
 
-    def inspect(self, state: GameState, item: str) -> list[str]:
+    def inspect(self, state: GameState, item: str) -> list[str]: # overrides Room.inspect
         if item != _ITEM:
-            return [f"You don't see '{item}' here."]
+            return super().inspect(item) # use the base class's inspect method
 
         if "DNS" in state.tokens:
             return ["The DNS hint has already been decoded."]

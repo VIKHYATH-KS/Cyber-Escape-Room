@@ -21,8 +21,8 @@ class Room:
     def solve(self, state: GameState) -> None:
         raise NotImplementedError
 
-    def inspect(self, state: GameState, item: str) -> list[str]:
-        return ["Nothing to inspect here."]
+    def inspect(self, item: str) -> list[str]:
+        return [f"You don't see '{item}' here."]
 
     def use(self, state: GameState, item: str) -> list[str]:
         if not item:

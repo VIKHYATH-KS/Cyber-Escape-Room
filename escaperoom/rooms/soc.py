@@ -15,7 +15,7 @@ class SOCRoom(Room):
     
     def inspect(self, state: GameState, item: str) -> list[str]:
         if item != "auth.log":
-            return ["Nothing to inspect here."]
+           return super().inspect(item)
 
         try:
             keypad, max_subnet, max_count, sample, malform_count = ( self.read_auth_log(f"{self.data_path}/auth.log"))

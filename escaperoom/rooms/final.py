@@ -81,7 +81,7 @@ class FinalRoom(Room):
         result.extend((f"MSG={message}", f"EXPECTED_HMAC={code}"))
         return result
 
-    def inspect(self, state: GameState, item: str) -> list[str]:
+    def inspect(self, item: str) -> list[str]:
         if item != _ITEM:
-            return [f"You don't see '{item}' here."]
+            return super().inspect(item)
         return ["The console is ready. Use gate to assemble the proof."]
