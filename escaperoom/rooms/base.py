@@ -18,9 +18,6 @@ class Room:
         self.description = description
         self.hints = hints
 
-    def solve(self, state: GameState) -> None:
-        raise NotImplementedError
-
     def inspect(self, item: str) -> list[str]:
         return [f"You don't see '{item}' here."]
 
