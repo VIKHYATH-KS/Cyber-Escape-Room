@@ -94,7 +94,7 @@ def make_rooms(data: str) -> dict[str, Room]:
     rooms = (
         Room(
             "lobby", 
-            "TEST: You are in the Intro Lobby.\n"
+            "You are in the Intro Lobby.\n"
             "A terminal blinks in the corner. Doors lead to: soc, dns, vault, malware, final.",
             hints=RADIO["lobby"]
         ),
