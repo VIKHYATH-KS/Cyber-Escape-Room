@@ -19,18 +19,27 @@ class SOCRoom(Room):
            return super().inspect(state, item)
 
         try:
-            keypad, max_subnet, max_count, sample, malform_count = ( self.read_auth_log(f"{self.data_path}/{SOC_ITEM}"))
+            (keypad,max_subnet,max_count,max_ip,sample,malform_count,) = self.read_auth_log(f"{self.data_path}/{SOC_ITEM}")
         except (OSError, ValueError) as error:
             return [f"[Room SOC] Could not analyze {SOC_ITEM}: {error}"]
 
         state.tokens["KEYPAD"] = keypad
         state.inventory.add("KEYPAD")
-        return [ "[Room SOC] Parsing logs...",
-        f"TOKEN[KEYPAD]={keypad}",
-        f"EVIDENCE[KEYPAD].TOP24={max_subnet}",
-        f"EVIDENCE[KEYPAD].COUNT={max_count}",
-        f"EVIDENCE[KEYPAD].SAMPLE={sample}",
-        f"EVIDENCE[KEYPAD].MALFORMED_SKIPPED={malform_count}",]
+
+        last_octet = max_ip.rsplit(".", 1)[1]
+
+        return [
+            "[Room SOC] Parsing logs...",
+            f"{max_count} failed attempts found in {max_subnet}",
+            f"Top IP is {max_ip} (last octet={last_octet})",
+            f"Token formed: {keypad}",
+            "",
+            f"TOKEN[KEYPAD]={keypad}",
+            f"EVIDENCE[KEYPAD].TOP24={max_subnet}",
+            f"EVIDENCE[KEYPAD].COUNT={max_count}",
+            f"EVIDENCE[KEYPAD].SAMPLE={sample}",
+            f"EVIDENCE[KEYPAD].MALFORMED_SKIPPED={malform_count}",
+        ]
 
     def read_auth_log(self, path):
         malform_count = 0
@@ -73,9 +82,10 @@ class SOCRoom(Room):
                     break
 
             Octet = max_ip.split(".")
-            last_octet=Octet[-1]
+            last_octet = max_ip.rsplit(".", 1)[1]
             keypad = last_octet + str(max_count)
-            return (keypad, max_subnet, max_count, sample, malform_count)
+
+            return (keypad,max_subnet,max_count,max_ip,sample,malform_count,)
 
     def check_valid_log_entry(self, part):
         if (len(part) == 13 and self.check_timestamp(part[0]) and part[2].startswith("sshd[") and part[2].endswith("]:") and part[3] in ("Accepted", "Failed") 
