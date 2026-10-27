@@ -12,7 +12,7 @@ class FinalGateError(ValueError):
 
 
 def read_final_gate(path: str) -> tuple[str, list[str], bytes]:
-    """Read the group, ordered token names, and hex-encoded HMAC key."""
+    """Read the group, ordered token names, and UTF-8-encoded HMAC key."""
     values: dict[str, str] = {}
     with open(path, encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, start=1):
@@ -32,9 +32,9 @@ def read_final_gate(path: str) -> tuple[str, list[str], bytes]:
     if not order:
         raise FinalGateError("Missing token_order record.")
     try:
-        key = bytes.fromhex(values["hmac_key"])
-    except (KeyError, ValueError) as err:
-        raise FinalGateError("hmac_key must contain valid hexadecimal data.") from err
+        key = values["hmac_key"].encode("utf-8")
+    except KeyError as err:
+        raise FinalGateError("Missing hmac_key record.") from err
     if not key:
         raise FinalGateError("hmac_key cannot be empty.")
     return group_id, order, key
